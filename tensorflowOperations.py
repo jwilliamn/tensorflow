@@ -146,9 +146,146 @@ c = tf.Variable([[0, 1], [2, 3]], name="matrix")  # create variable c as 2x2 mat
 d = tf.Variable(tf.zeros([784, 10]))  # Create variable w as 784 x 10 tensor, filled with zero
 
 # Initialize variables before using them
-init = tf.global_variables_initializer()
+init = tf.global_variables_initializer()  # Initializing all variables at once
+init_ab = tf.variables_initializer([a, b], name="init_ab")  # Initializing only a subset
+w = tf.Variable(tf.zeros([784,10]))  	# Initializing a single variable
 
 with tf.Session() as sess:
-	print(sess.run(int))
 	#print(sess.run(a))
+	#print(sess.run(init))
+	sess.run(init_ab)
+	sess.run(w.initializer)
+
+	print(w.eval())
+
+# Variable assign
+w = tf.Variable(10)
+w.assign(100)
+
+with tf.Session() as sess:
+	sess.run(w.initializer)
+	print(w.eval())   # Prints 10 why? because w.assign(100) creates an op but needs to be run
+					  # to take effect
+
+# Variable assign and run
+w = tf.Variable(10)
+assign_op = w.assign(100)
+
+with tf.Session() as sess:
+	sess.run(assign_op)
+	print(w.eval())
 	
+
+# Create a variable whose original value is 2
+myVar =  tf.Variable(2, name="myVar")
+myVarTimesTwo = myVar.assign(2*myVar)
+
+with tf.Session() as sess:
+	sess.run(myVar.initializer)
+	sess.run(myVarTimesTwo)  # >> 4
+	sess.run(myVarTimesTwo)  # >> 8
+	sess.run(myVarTimesTwo)  # >> 16
+
+	print(myVar.eval())
+
+
+# Assign add() and sub()
+myVar = tf.Variable(10)
+
+with tf.Session() as sess:
+	sess.run(myVar.initializer)
+	sess.run(myVar.assign_add(10))  # Increment by 10
+	sess.run(myVar.assign_sub(2))   # decrement by 2
+
+	print(myVar.eval())
+
+# Each session maintains its own copy of variable
+w = tf.Variable(10)
+
+sess1 = tf.Session()
+sess2 = tf.Session()
+
+sess1.run(w.initializer)
+sess2.run(w.initializer)
+
+print(sess1.run(w.assign_add(10)))
+print(sess2.run(w.assign_sub(2)))
+
+print(sess1.run(w.assign_add(100)))
+print(sess2.run(w.assign_sub(50)))
+
+sess1.close()
+sess2.close()
+
+
+# Use a variable to initialize another variable (U = W*2)
+W = tf.Variable(tf.truncated_normal([700, 10]))
+U = tf.Variable(2 * W.initialized_value())
+
+with tf.Session() as sess:
+	sess.run(W.initializer)
+	sess.run(U.initializer)
+
+	print(W.eval())
+	print(U.eval())
+
+
+# InteractiveSession
+sess = tf.InteractiveSession()
+a = tf.constant(5.0)
+b = tf.constant(6.0)
+c = a*b
+## We can just use 'c.eval()' without specifying the context 'sess'
+print(c.eval())
+sess.close()
+
+
+# Placeholders are valid op 
+#Create a placeholder of type float 32-bit is a vector of 3 elem
+a = tf.placeholder(tf.float32, shape=[3])
+b = tf.constant([5, 5, 5], tf.float32)
+
+# use the placeholder as you would a constant or a variable
+c = a + b # short for tf.add()
+
+with tf.Session() as sess:
+	# feed [1, 2, 3] to placeholder a via the dict {a: [1, 2, 3]}
+	# fetch value of c
+	print(sess.run(c, {a:[1, 2, 3]}))
+
+
+# Feeding values to TF ops
+# Create operations, tensor, etc (using the default graph)
+a = tf.add(2, 5)
+b = tf.mul(a, 3)
+
+with tf.Session() as sess:
+	# define the dictionary that says to replace the value of a with '15'
+	replace_dict = {a: 15}
+	# Run de session, passing in 'replace_dict' as the value o 'feed_dict'
+	print(sess.run(b, feed_dict=replace_dict))
+	#print(b.eval())
+
+# Normal loading vs Lazy loading
+## Normal loading
+x = tf.Variable(10, name='x')
+y = tf.Variable(20, name='y')
+z = tf.add(x, y)  # create the node for add node before executing the graph
+
+with tf.Session() as sess:
+	sess.run(tf.global_variables_initializer())
+	writer = tf.summary.FileWriter('./graphs', sess.graph)
+	for _ in range(10):
+		sess.run(z)
+	writer.close()
+
+## Lazy loading  (Avoid it!!)
+x = tf.Variable(10, name='x')
+y = tf.Variable(20, name='y')
+
+with tf.Session() as sess:
+	sess.run(tf.global_variables_initializer())
+	writer = tf.summary.FileWriter('./graphs', sess.graph)
+	for _ in range(10):
+		sess.run(tf.add(x, y))  # We save one line of code
+	writer.close()
