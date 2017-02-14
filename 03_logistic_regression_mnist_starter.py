@@ -22,6 +22,28 @@ n_epochs = 10
 # using TF Learn's built in function to load MNIST data to the folder data/mnist
 mnist = input_data.read_data_sets('/home/williamn/Repository/data/mnist', one_hot=True) 
 
+# visualization of the data and some another useful information
+# size of data
+print('Total training images in dataset = ' + str(mnist.train.images.shape))
+x_train = mnist.train.images[:]
+y_train = mnist.train.labels[:]
+print('x_train examples = ' + str(x_train.shape))
+print('y_train examples = ' + str(y_train.shape))
+
+x_test = mnist.test.images[:]
+y_test = mnist.test.labels[:]
+print('x_test examples = ' + str(x_test.shape))
+print('y_test examples = ' + str(y_test.shape))
+
+# visualizing
+print('First label' + str(y_train[1]))
+label = y_train[1].argmax(axis=0)
+image = x_train[1].reshape([28,28])
+plt.title('Example: %d Label: %d' % (1, label))
+plt.imshow(image, cmap=plt.get_cmap('gray_r'))
+plt.show()
+
+
 # Step 2: create placeholders for features and labels
 # each image in the MNIST data is of shape 28*28 = 784
 # therefore, each image is represented with a 1x784 tensor
