@@ -23,6 +23,10 @@ print(n_samples)
 X = tf.placeholder(tf.float32, name="X")
 Y = tf.placeholder(tf.float32, name="Y")
 
+## Sub step 
+x_input = np.linspace(-1,1,100)
+y_input = x_input*3 + np.random.randn(x_input.shape[0])*0.5
+
 # Step 3: create weight and bias, initialized to 0
 # name your variables w and b
 w = tf.Variable(0.0, name="weights_1")
@@ -31,8 +35,8 @@ b = tf.Variable(0.0, name="bias")
 
 # Step 4: predict Y (number of theft) from the number of fire
 # name your variable Y_predicted
-#Y_predicted = X * w + b
-Y_predicted = X * X * w + X * u + b
+Y_predicted = X * w + b
+#Y_predicted = X * X * w + X * u + b
 
 # Step 5: use the square error as the loss function
 # name your variable loss
@@ -49,7 +53,7 @@ with tf.Session() as sess:
 	writer = tf.summary.FileWriter('./graphs/linear_reg', sess.graph)
 
 	# Step 8: train the model
-	for i in range(10): # run 100 epochs
+	for i in range(100): # run 100 epochs
 		total_loss = 0
 		for x, y in data:
 			#print(sess.run(Y_predicted, feed_dict={X:x, Y:y}))
@@ -70,6 +74,6 @@ with tf.Session() as sess:
 X, Y = data.T[0], data.T[1]
 
 plt.plot(X, Y, 'bo', label='Real data')
-plt.plot(X, X * X * w_value + X*u_value + b_value, 'r', label='Predicted data')
+plt.plot(X, X * w_value + b_value, 'r', label='Predicted data')
 plt.legend()
 plt.show()
