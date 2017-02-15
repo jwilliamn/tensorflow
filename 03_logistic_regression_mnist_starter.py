@@ -36,10 +36,13 @@ print('x_test examples = ' + str(x_test.shape))
 print('y_test examples = ' + str(y_test.shape))
 
 # visualizing
-print('First label' + str(y_train[1]))
-label = y_train[1].argmax(axis=0)
-image = x_train[1].reshape([28,28])
-plt.title('Example: %d Label: %d' % (1, label))
+ran_image = ran.randint(0, x_train.shape[0])
+print('Random label' + str(y_train[ran_image]))
+#print('Random image')
+#print(x_train[ran_image])
+label = y_train[ran_image].argmax(axis=0)
+image = x_train[ran_image].reshape([28,28])
+plt.title('Example: %d Label: %d' % (ran_image, label))
 plt.imshow(image, cmap=plt.get_cmap('gray_r'))
 plt.show()
 
@@ -113,5 +116,18 @@ with tf.Session() as sess:
 		total_correct_preds += sess.run(accuracy)	
 	
 	print( 'Accuracy {0}'.format(total_correct_preds/mnist.test.num_examples))
+
+	# Visualization of the predicctions
+	ran_image = ran.randint(0, X_batch.shape[0])
+	print('Random test label {0}'.format(Y_batch[ran_image]))
+	
+	pred_label = tf.argmax(preds, 1)
+	print('Predicted value = %d' % sess.run(pred_label[ran_image]))
+
+	label = Y_batch[ran_image].argmax(axis=0)
+	image = X_batch[ran_image].reshape([28,28])
+	plt.title('Example test: %d Label: %d' % (ran_image, label))
+	plt.imshow(image, cmap=plt.get_cmap('gray_r'))
+	plt.show()
 
 	writer.close()
