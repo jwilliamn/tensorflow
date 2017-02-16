@@ -38,13 +38,26 @@ print('y_test examples = ' + str(y_test.shape))
 # visualizing
 ran_image = ran.randint(0, x_train.shape[0])
 print('Random label' + str(y_train[ran_image]))
-#print('Random image')
-#print(x_train[ran_image])
+print('Random image')
+print(x_train[ran_image])
 label = y_train[ran_image].argmax(axis=0)
 image = x_train[ran_image].reshape([28,28])
 plt.title('Example: %d Label: %d' % (ran_image, label))
 plt.imshow(image, cmap=plt.get_cmap('gray_r'))
 plt.show()
+
+
+# to visualize more than one image
+#ran_image = ran.randint(0, x_train.shape[0])
+#print('Random label' + str(y_train[1:10]))
+#print('Random image')
+#print(x_train[1:10])
+#label = y_train[1:10].argmax(axis=0)
+#image = x_train[1:10].reshape([252,28])
+#plt.title('Example: %d Label: %d' % (10, 1))
+#plt.imshow(image, cmap=plt.get_cmap('gray_r'))
+#plt.show()
+
 
 
 # Step 2: create placeholders for features and labels
